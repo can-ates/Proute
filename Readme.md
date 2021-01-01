@@ -6,6 +6,7 @@ Project Management System
 -----User-----
     name: string
     email: string
+    password: string
     photoURL: string
     projects: ref(Project)
     
