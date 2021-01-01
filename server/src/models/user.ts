@@ -1,15 +1,15 @@
 import mongoose, { Schema, Document, ObjectId } from 'mongoose'
 
 
-interface User extends Document {
+export interface IUser extends Document {
     name: string;
     email: string;
-    password: string;
-    googleId: string;
-    facebookId: string;
-    githubId: string;
+    password?: string;
+    googleId?: string;
+    facebookId?: string;
+    githubId?: string;
     photoURL: string;
-    projects: ObjectId[]
+    projects?: ObjectId[]
 }
 
 const userSchema: Schema = new Schema({
@@ -45,4 +45,5 @@ const userSchema: Schema = new Schema({
 
 })
 
-export default mongoose.model<User>('User', userSchema)
+export const User = mongoose.model<IUser>('User', userSchema)
+
