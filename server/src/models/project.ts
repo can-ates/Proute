@@ -1,105 +1,69 @@
-import mongoose, { Schema, Document, ObjectId } from 'mongoose'
+import { prop, Ref, getModelForClass } from '@typegoose/typegoose'
+
+import { UserModel } from './user';
 
 
-interface IProject extends Document {
-    author: ObjectId;
-    contributors: ObjectId[];
-    title: string;
-    description: string;
-    tags: string[];
-    status: string;
-    tasks: [{
-        priority: string;
-        todo: string;
-        assigned: ObjectId;
-        createdAt: Date;
-        tags: string[];
-        status: string;
-    }];
-    comments: [{
-        author: ObjectId;
-        comment: string;
-        createdAt: Date;
-    }];
-    createdAt: Date;
-    dueDate: Date;
+class CommentModel {
+    @prop({ref: () => UserModel, required: true })
+    public author!: Ref<UserModel>;
 
+    @prop({ required: true})
+    public comment!: string
+
+    @prop({default: Date.now})
+    public createdAt?: Date
 }
 
-const projectSchema: Schema = new Schema({
-    author: {
-        type: Schema.Types.ObjectId,
-        ref: 'User',
-        required: true,
-    },
-    contributors: [{
-        type: Schema.Types.ObjectId,
-        ref: 'User'
-    }],
-    title: {
-        type: String,
-        required: true,
-    },
-    description: {
-        type: String,
-        required: true
-    },
-    tags: [{
-        type: String,
-    }],
-    status: {
-        type: String,
-        default: 'In progress'
-    },
-    tasks: [{
-        priority: {
-            type: String,
-            default: 'Low'
-        },
-        todo: {
-            type: String,
-            required: true
-        },
-        assigned: {
-            type: Schema.Types.ObjectId,
-            ref: "User"
-        },
-        createdAt: {
-            type: Date,
-            default: Date.now
-        },
-        tags: [{
-            type: String,
-        }],
-        status: {
-            type: String,
-            default: "In progress"
-        }
-    }],
-    comments: [{
-        author: {
-            type: Schema.Types.ObjectId,
-            ref: "User"
-        },
-        comment: {
-            type: String,
-            required: true
-        },
-        createdAt: {
-            type: Date,
-            default: Date.now
-        }
-    }],
-    createdAt: {
-        type: Date,
-        default: Date.now,
-    },
-    dueDate: {
-        type: Date,
-        required: true,
-    }
+class TaskModel {
+    @prop({default: 'Low'})
+    public priority?: string
 
+    @prop({required: true})
+    public todo!: string
 
-})
+    @prop({ref: () => UserModel, required: true})
+    public assigned!: Ref<UserModel>
 
-export const Project = mongoose.model<IProject>('Project', projectSchema)
+    @prop({default: Date.now})
+    public createdAt?: Date
+
+    @prop()
+    public tags?: string[]
+
+    @prop({ default: 'In progress'})
+    public status?: string
+}
+
+export class ProjectModel {
+    @prop({ref: () => UserModel, required: true })
+    public author!: Ref<UserModel>;
+
+    @prop({ref: () => UserModel })
+    public contributors?: Ref<UserModel>[];
+
+    @prop({ required: true})
+    public title!: string
+
+    @prop({ required: true})
+    public description!: string
+
+    @prop()
+    public tags?: string[]
+
+    @prop({ default: 'In progress'})
+    public status?: string
+
+    @prop()
+    public tasks?: TaskModel[]
+
+    @prop()
+    public comments?: CommentModel[]
+
+    @prop({default: Date.now})
+    public createdAt?: Date
+
+    @prop({required: true})
+    public dueDate!: Date
+}
+
+export const Project = getModelForClass(ProjectModel)
