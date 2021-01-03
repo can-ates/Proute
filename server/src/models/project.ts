@@ -1,11 +1,11 @@
 import { prop, Ref, getModelForClass } from '@typegoose/typegoose'
 
-import { UserModel } from './user';
+import { User } from './user';
 
 
 class CommentModel {
-    @prop({ref: () => UserModel, required: true })
-    public author!: Ref<UserModel>;
+    @prop({ref: () => User, required: true })
+    public author!: Ref<User>;
 
     @prop({ required: true})
     public comment!: string
@@ -21,8 +21,8 @@ class TaskModel {
     @prop({required: true})
     public todo!: string
 
-    @prop({ref: () => UserModel, required: true})
-    public assigned!: Ref<UserModel>
+    @prop({ref: () => User, required: true})
+    public assigned!: Ref<User>
 
     @prop({default: Date.now})
     public createdAt?: Date
@@ -34,12 +34,12 @@ class TaskModel {
     public status?: string
 }
 
-export class ProjectModel {
-    @prop({ref: () => UserModel, required: true })
-    public author!: Ref<UserModel>;
+export class Project {
+    @prop({ref: () => User, required: true })
+    public author!: Ref<User>;
 
-    @prop({ref: () => UserModel })
-    public contributors?: Ref<UserModel>[];
+    @prop({ref: () => User })
+    public contributors?: Ref<User>[];
 
     @prop({ required: true})
     public title!: string
@@ -66,4 +66,4 @@ export class ProjectModel {
     public dueDate!: Date
 }
 
-export const Project = getModelForClass(ProjectModel)
+export const ProjectModel = getModelForClass(Project)

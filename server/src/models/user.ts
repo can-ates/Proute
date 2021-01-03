@@ -1,9 +1,9 @@
 import { prop, Ref, getModelForClass } from '@typegoose/typegoose'
 
-import { ProjectModel } from './project';
+import { Project } from './project';
 
 
-export class UserModel {
+export class User {
     @prop({ required: true })
     public name!: string;
 
@@ -25,9 +25,8 @@ export class UserModel {
     @prop({ default: 'https://res.cloudinary.com/dqwhaxlxv/image/upload/v1609528014/18958255_qo7mxj.jpg' })
     public photoURL?: string
 
-    @prop({ref: () => ProjectModel})
-    public projects?: Ref<ProjectModel>[]
+    @prop({ref: 'Project'})
+    public projects?: Ref<Project>[]
 }
 
-export const User = getModelForClass(UserModel)
-
+export const UserModel = getModelForClass(User)

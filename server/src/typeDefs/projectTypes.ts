@@ -3,34 +3,34 @@ import User from './userTypes'
 
 @ObjectType({description: "Task type definition"})
 class Task {
-    @Field()
+    @Field({nullable: true})
     priority?: string;
 
-    @Field()
+    @Field({nullable: true})
     todo?: string;
 
-    @Field(type => User)
+    @Field(type => User, {nullable: true})
     assigned?: User;
 
-    @Field()
+    @Field({nullable: true})
     createdAt?: Date;
 
-    @Field(type => String)
+    @Field(type => String, {nullable: true})
     tags?: string[];
 
-    @Field()
+    @Field({nullable: true})
     status?: string;
 }
 
 @ObjectType({description: "Comment type definition"})
 class Comment {
-    @Field(type => User)
+    @Field(type => User, {nullable: true})
     author?: User;
 
-    @Field()
+    @Field({nullable: true})
     comment?: string;
 
-    @Field()
+    @Field({nullable: true})
     createdAt?: Date
 }
 
@@ -39,37 +39,37 @@ class Comment {
 
 @ObjectType({description: "Project type definitions"})
 export default class Project {
-    @Field(type => ID)
-    _id!: string
+    @Field(type => ID, {nullable: true})
+    _id?: string
 
-    @Field(type => User)
+    @Field(type => User,{nullable: true})
     author?: User;
 
-    @Field(type => [User])
+    @Field(type => [User], {nullable: true})
     contributors?: User[];
 
-    @Field()
+    @Field({nullable: true})
     title?: string;
 
-    @Field()
+    @Field({nullable: true})
     description?: string;
 
-    @Field(type => String)
+    @Field(type => String, {nullable: true})
     tags?: string[];
 
-    @Field()
+    @Field({nullable: true})
     status?: string;
 
-    @Field(type => [Task])
+    @Field(type => [Task], {nullable: true})
     tasks?: Task[]
     
-    @Field(type => Comment)
+    @Field(type => Comment, {nullable: true})
     comments?: Comment[]
 
-    @Field()
+    @Field({nullable: true})
     createdAt?: Date
 
-    @Field()
+    @Field({nullable: true})
     dueDate?: Date
 
 }

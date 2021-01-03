@@ -1,29 +1,29 @@
 import { Field, ObjectType, ID } from "type-graphql";
 import Project from "../typeDefs/projectTypes";
 
-@ObjectType({description: "The user type definitions"})
+@ObjectType({description: "User type definitions"})
 export default class User {
     @Field(type => ID)
     _id!: string;
 
-    @Field()
+    @Field({nullable: true})
     name?: string;
 
-    @Field()
+    @Field({nullable: true})
     password?: string;
 
-    @Field()
+    @Field({nullable: true})
     googleId?: string;
 
-    @Field()
+    @Field({nullable: true})
     facebookId?: string;
 
-    @Field()
+    @Field({nullable: true})
     githubId?: string;
 
-    @Field()
+    @Field({nullable: true})
     photoURL?: string;
 
-    @Field(type => [Project])
+    @Field(type => [Project], {nullable: true})
     projects?: Project[];
 }
