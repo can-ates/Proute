@@ -3,7 +3,6 @@ import { prop, Ref, getModelForClass } from '@typegoose/typegoose'
 import { ProjectModel } from './project';
 
 
-
 export class UserModel {
     @prop({ required: true })
     public name!: string;
