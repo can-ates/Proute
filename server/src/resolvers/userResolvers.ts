@@ -1,13 +1,15 @@
 import { Resolver, Query, Arg, Mutation, InputType, Field, Ctx } from "type-graphql";
 import { IsEmail, IsNotEmpty, Length } from 'class-validator'
 import User from '../typeDefs/userTypes'
+import { MyContext } from "../typeDefs/MyContext";
 import { UserModel } from '../models/user'
 
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
 
 
-@InputType({ description: "Register user data" })
+
+@InputType({ description: "Register user by password" })
 class registerUserInput {
     @Field()
     name!: string
@@ -28,16 +30,19 @@ class registerUserInput {
 export class UserResolver {
 
 
+    //REGISTER USER BY PASSWORD
     @Mutation(returns => String)
     async registerUser(
         @Arg("userData") newUserData: registerUserInput,
-
+        @Ctx() ctx: MyContext
     ): Promise<String> {
 
         let { name, email, password } = newUserData
 
 
         const hashedPassword = await bcrypt.hashSync(password, 10)
+
+        console.log(ctx.res)
 
         UserModel.create({
             name,
@@ -55,4 +60,6 @@ export class UserResolver {
 
         return 'lol'
     }
+
+    
 }
