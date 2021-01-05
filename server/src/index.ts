@@ -8,6 +8,7 @@ import { UserResolver } from "./resolvers/userResolvers";
 import { ProjectResolver } from "./resolvers/projectResolvers";
 require("dotenv").config();
 
+
 const main = async () => {
 	const schema = await buildSchema({
 		resolvers: [UserResolver, ProjectResolver],
@@ -19,6 +20,7 @@ const main = async () => {
 			req,
 			res,
 		}),
+		
 	});
 
 	const app = express();
