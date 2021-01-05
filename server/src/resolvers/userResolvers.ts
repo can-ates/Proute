@@ -6,19 +6,43 @@ import {
 	InputType,
 	Field,
 	Ctx,
+	ObjectType,
 } from "type-graphql";
 import { IsEmail, IsNotEmpty, Length } from "class-validator";
-import User from "../typeDefs/userTypes";
-import { MyContext } from "../typeDefs/MyContext";
-import { UserModel } from "../models/user";
+import { hashSync, compare } from "bcrypt";
 
-import { hashSync } from "bcrypt";
-import jwt from "jsonwebtoken";
+import { User, UserModel } from "../typeDefs/userTypes";
+import { MyContext } from "../typeDefs/MyContext";
+import {
+	createAccessToken,
+	createRefreshToken,
+	sendRefreshToken,
+} from "../auth/token";
+
+@ObjectType()
+class FieldError {
+	@Field()
+	field?: string;
+	@Field()
+	message?: string;
+}
+
+@ObjectType()
+class LoginResponse {
+	@Field(() => [FieldError], { nullable: true })
+	errors?: FieldError[];
+
+	@Field({ nullable: true })
+	accessToken?: string;
+
+	@Field(() => User, { nullable: true })
+	user?: User;
+}
 
 @InputType({ description: "Register User Data" })
 class registerUserInput {
-    @Field()
-    @IsNotEmpty()
+	@Field()
+	@IsNotEmpty()
 	name!: string;
 
 	@Field()
@@ -41,7 +65,7 @@ export class UserResolver {
 	): Promise<String> {
 		let { name, email, password } = newUserData;
 
-		//Search if user exists
+		//Check if user exists
 		const user = await UserModel.findOne({ email });
 
 		if (!user) {
@@ -51,13 +75,52 @@ export class UserResolver {
 				name,
 				email,
 				password: hashedPassword,
-            });
-            
-            
+			});
+		} else {
+			throw new Error("Email already exists");
 		}
 
-        return user ? "Email already exists" : "Register Successful"
+		return "Register Successful";
 	}
 
-	
+	//LOGIN USER
+	@Mutation(returns => LoginResponse)
+	async loginUser(
+		@Arg("email") email: string,
+		@Arg("password") password: string,
+		@Ctx() ctx: MyContext
+	): Promise<LoginResponse> {
+		const user = await UserModel.findOne({ email });
+
+		if (!user) {
+			return {
+				errors: [
+					{
+						field: "email",
+						message: "Wrong credentials",
+					},
+				],
+			};
+		}
+
+		const isValidPassword = await compare(password, user.password!);
+
+		if (!isValidPassword) {
+			return {
+				errors: [
+					{
+						field: "password",
+						message: "Wrong credentials",
+					},
+				],
+			};
+		}
+
+		sendRefreshToken(ctx.res, createRefreshToken(user));
+
+		return {
+			accessToken: createAccessToken(user),
+			user,
+		};
+	}
 }

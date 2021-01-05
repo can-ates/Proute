@@ -1,75 +1,97 @@
 import { Field, ObjectType, ID } from "type-graphql";
-import User from './userTypes'
+import { prop, Ref, getModelForClass } from '@typegoose/typegoose'
+import {User} from './userTypes'
 
 @ObjectType({description: "Task type definition"})
 class Task {
+    @prop({default: 'Low'})
     @Field({nullable: true})
     priority?: string;
 
+    @prop({required: true})
     @Field({nullable: true})
     todo?: string;
 
+    @prop({ref: 'User', required: true})
     @Field(type => User, {nullable: true})
-    assigned?: User;
+    assigned?: Ref<User>;
 
+    @prop({default: Date.now})
     @Field({nullable: true})
-    createdAt?: Date;
+    startedAt?: Date;
 
+    @prop({type: () => [String]})
     @Field(type => String, {nullable: true})
-    tags?: string[];
+    taskTags?: string[];
 
+    @prop({ default: 'In progress'})
     @Field({nullable: true})
-    status?: string;
+    taskStatus?: string;
 }
 
 @ObjectType({description: "Comment type definition"})
 class Comment {
+    @prop({ref: 'User', required: true })
     @Field(type => User, {nullable: true})
-    author?: User;
+    commenter?: Ref<User>;
 
+    @prop({ required: true})
     @Field({nullable: true})
     comment?: string;
 
+    @prop({default: Date.now})
     @Field({nullable: true})
-    createdAt?: Date
+    commentedAt?: Date
 }
 
 
 
 
 @ObjectType({description: "Project type definitions"})
-export default class Project {
+export class Project {
     @Field(type => ID, {nullable: true})
     _id?: string
 
+    @prop({ref: 'User', required: true })
     @Field(type => User,{nullable: true})
-    author?: User;
+    author?: Ref<User>;
 
+    @prop({ref: 'User' })
     @Field(type => [User], {nullable: true})
-    contributors?: User[];
+    contributors?: Ref<User>[];
 
+    @prop({ required: true})
     @Field({nullable: true})
     title?: string;
 
+    @prop({ required: true})
     @Field({nullable: true})
     description?: string;
 
-    @Field(type => String, {nullable: true})
-    tags?: string[];
+    @prop({type: () => [String]})
+    @Field(type => [String], {nullable: true})
+    projectTags?: string[];
 
+    @prop({ default: 'In progress'})
     @Field({nullable: true})
-    status?: string;
+    projectStatus?: string;
 
+    @prop({type: () => [Task]})
     @Field(type => [Task], {nullable: true})
     tasks?: Task[]
     
-    @Field(type => Comment, {nullable: true})
+    @prop({type: () => [Comment]})
+    @Field(type => [Comment], {nullable: true})
     comments?: Comment[]
 
+    @prop({default: Date.now})
     @Field({nullable: true})
     createdAt?: Date
 
+    @prop({required: true})
     @Field({nullable: true})
     dueDate?: Date
 
 }
+
+export const ProjectModel = getModelForClass(Project)

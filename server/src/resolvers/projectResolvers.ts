@@ -1,6 +1,6 @@
 import { Resolver, Query } from "type-graphql";
-import Project from "../typeDefs/projectTypes";
-import {Project as ProjectModel} from '../models/project'
+import {Project} from "../typeDefs/projectTypes";
+
 
 
 @Resolver()

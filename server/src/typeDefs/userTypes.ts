@@ -1,29 +1,49 @@
 import { Field, ObjectType, ID } from "type-graphql";
-import Project from "../typeDefs/projectTypes";
+import { prop, Ref, getModelForClass } from '@typegoose/typegoose'
+
+import {Project} from "../typeDefs/projectTypes";
+
 
 @ObjectType({description: "User type definitions"})
-export default class User {
+export class User {
     @Field(type => ID)
-    _id!: string;
+    _id?: string;
 
-    @Field({nullable: true})
+    @prop({ required: true, unique: true })
+    @Field()
     name?: string;
 
-    @Field({nullable: true})
+    @prop({ required: true, unique: true })
+    @Field()
+    email?: string;
+
+    @prop()
+    @Field()
     password?: string;
 
-    @Field({nullable: true})
+    @prop()
+    @Field()
     googleId?: string;
 
-    @Field({nullable: true})
+    @prop()
+    @Field()
     facebookId?: string;
 
-    @Field({nullable: true})
+    @prop()
+    @Field()
     githubId?: string;
 
-    @Field({nullable: true})
+    @prop({ default: 'https://res.cloudinary.com/dqwhaxlxv/image/upload/v1609528014/18958255_qo7mxj.jpg' })
+    @Field()
     photoURL?: string;
 
-    @Field(type => [Project], {nullable: true})
-    projects?: Project[];
+    @prop({ref: 'Project'})
+    @Field(type => [Project])
+    projects?: Ref<Project>[]
+
+    @prop({default: 0})
+    @Field()
+    tokenVersion?: number
 }
+
+export const UserModel = getModelForClass(User)
