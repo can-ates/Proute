@@ -6,6 +6,7 @@ import {Project} from "../typeDefs/projectTypes";
 
 @ObjectType({description: "User type definitions"})
 export class User {
+    //TODO TRY MINIMIZING COLUMNS
     @Field(type => ID)
     _id?: string;
 

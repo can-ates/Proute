@@ -118,7 +118,9 @@ export class UserResolver {
 
 		sendRefreshToken(ctx.res, createRefreshToken(user));
 
+		
 		return {
+			//CLIENT WILL SEND THIS TOKEN FOR AUTHORIZED ROUTES
 			accessToken: createAccessToken(user),
 			user,
 		};

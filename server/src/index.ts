@@ -3,6 +3,7 @@ import "reflect-metadata";
 import express from "express";
 import cookieParser from "cookie-parser";
 import { verify } from "jsonwebtoken";
+import cors from 'cors'
 
 import mongoose from "mongoose";
 import { ApolloServer } from "apollo-server-express";
@@ -19,7 +20,16 @@ import {
 
 const main = async () => {
 	const app = express();
+	app.use(
+		cors({
+		  origin: "http://localhost:3000",
+		  credentials: true
+		})
+	  );
 	app.use(cookieParser());
+	//For every graphql request, Client will 
+	//check if the token expired, if expired
+	//Token will be refreshed before request
 	app.post("/refresh_token", async (req, res) => {
 		const token = req.cookies.jid;
 		if (!token) {
@@ -30,7 +40,7 @@ const main = async () => {
 		try {
 			payload = verify(token, process.env.REFRESH_TOKEN_SECRET!);
 		} catch (err) {
-			console.log(err);
+			
 			return res.send({ ok: false, accessToken: "" });
 		}
 
@@ -42,6 +52,7 @@ const main = async () => {
 			return res.send({ ok: false, accessToken: "" });
 		}
 
+		
 		if (user.tokenVersion !== payload.tokenVersion) {
 			return res.send({ ok: false, accessToken: "" });
 		}
@@ -63,6 +74,7 @@ const main = async () => {
 		}),
 	});
 
+	//Apollo offers cors but we want to implement it ourself
 	server.applyMiddleware({ app, cors: false });
 
 	mongoose
