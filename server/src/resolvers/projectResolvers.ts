@@ -1,5 +1,5 @@
 import { Resolver, Query } from "type-graphql";
-import {Project} from "../typeDefs/projectTypes";
+import {Project} from "../models/project";
 
 
 

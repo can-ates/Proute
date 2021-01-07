@@ -1,6 +1,6 @@
 import { Field, ObjectType, ID } from "type-graphql";
 import { prop, Ref, getModelForClass } from '@typegoose/typegoose'
-import {User} from './userTypes'
+import {User} from './user'
 
 @ObjectType({description: "Task type definition"})
 class Task {

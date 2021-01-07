@@ -1,7 +1,7 @@
 import { Field, ObjectType, ID } from "type-graphql";
 import { prop, Ref, getModelForClass } from '@typegoose/typegoose'
 
-import {Project} from "../typeDefs/projectTypes";
+import {Project} from "./project";
 
 
 @ObjectType({description: "User type definitions"})

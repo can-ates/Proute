@@ -9,7 +9,7 @@ import mongoose from "mongoose";
 import { ApolloServer } from "apollo-server-express";
 import { buildSchema } from "type-graphql";
 
-import { UserModel } from "./typeDefs/userTypes";
+import { UserModel } from "./models/user";
 import { UserResolver } from "./resolvers/userResolvers";
 import { ProjectResolver } from "./resolvers/projectResolvers";
 import {

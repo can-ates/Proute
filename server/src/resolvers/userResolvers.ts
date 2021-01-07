@@ -3,17 +3,15 @@ import {
 	Query,
 	Arg,
 	Mutation,
-	InputType,
-	Field,
 	Ctx,
-	ObjectType,
 	UseMiddleware,
 } from "type-graphql";
-import { IsEmail, IsNotEmpty, Length } from "class-validator";
 import { hashSync, compare } from "bcrypt";
 
 import {isAuth} from '../middleware/isAuth'
-import { User, UserModel } from "../typeDefs/userTypes";
+import { User, UserModel } from "../models/user";
+import {LoginResponse} from '../typeDefs/responseTypes'
+import {registerUserInput} from '../typeDefs/inputTypes'
 import { MyContext } from "../typeDefs/MyContext";
 import {
 	createAccessToken,
@@ -22,42 +20,8 @@ import {
 } from "../auth/token";
 import { DocumentType } from "@typegoose/typegoose";
 
-@ObjectType()
-class FieldError {
-	@Field()
-	field?: string;
-	@Field()
-	message?: string;
-}
 
-@ObjectType()
-class LoginResponse {
-	@Field(() => [FieldError], { nullable: true })
-	errors?: FieldError[];
 
-	@Field({ nullable: true })
-	accessToken?: string;
-
-	@Field(() => User, { nullable: true })
-	user?: User;
-}
-
-@InputType({ description: "Register User Data" })
-class registerUserInput {
-	@Field()
-	@IsNotEmpty()
-	name!: string;
-
-	@Field()
-	@IsEmail()
-	@IsNotEmpty()
-	email!: string;
-
-	@Field()
-	@Length(8, 16)
-	@IsNotEmpty()
-	password!: string;
-}
 
 @Resolver()
 export class UserResolver {
