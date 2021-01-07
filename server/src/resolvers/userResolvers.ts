@@ -7,10 +7,12 @@ import {
 	Field,
 	Ctx,
 	ObjectType,
+	UseMiddleware,
 } from "type-graphql";
 import { IsEmail, IsNotEmpty, Length } from "class-validator";
 import { hashSync, compare } from "bcrypt";
 
+import {isAuth} from '../middleware/isAuth'
 import { User, UserModel } from "../typeDefs/userTypes";
 import { MyContext } from "../typeDefs/MyContext";
 import {
@@ -18,6 +20,7 @@ import {
 	createRefreshToken,
 	sendRefreshToken,
 } from "../auth/token";
+import { DocumentType } from "@typegoose/typegoose";
 
 @ObjectType()
 class FieldError {
@@ -58,6 +61,17 @@ class registerUserInput {
 
 @Resolver()
 export class UserResolver {
+	//FETCH LOGGED IN USER
+	@Query(returns => User)
+	@UseMiddleware(isAuth)
+	async me(
+		@Ctx() ctx: MyContext
+	): Promise<DocumentType<User> | null>  {
+		
+
+		return await UserModel.findById(ctx!.payload!.userId)
+	}
+
 	//REGISTER USER
 	@Mutation(returns => String)
 	async registerUser(
