@@ -1,7 +1,11 @@
 import { Field, ObjectType, ID } from "type-graphql";
-import { prop, Ref, getModelForClass } from '@typegoose/typegoose'
+import { prop, Ref, getModelForClass, plugin } from '@typegoose/typegoose'
+import autopopulate from 'mongoose-autopopulate'
+
+
 import {User} from './user'
 
+@plugin(autopopulate as any)
 @ObjectType({description: "Task type definition"})
 class Task {
     @prop({default: 'Low'})
@@ -12,7 +16,7 @@ class Task {
     @Field({nullable: true})
     todo?: string;
 
-    @prop({ref: 'User', required: true})
+    @prop({autopopulate: true,ref: 'User', required: true})
     @Field(type => User, {nullable: true})
     assigned?: Ref<User>;
 
@@ -29,9 +33,10 @@ class Task {
     taskStatus?: string;
 }
 
+@plugin(autopopulate as any)
 @ObjectType({description: "Comment type definition"})
 class Comment {
-    @prop({ref: 'User', required: true })
+    @prop({autopopulate: true,ref: 'User', required: true })
     @Field(type => User, {nullable: true})
     commenter?: Ref<User>;
 
@@ -46,17 +51,17 @@ class Comment {
 
 
 
-
+@plugin(autopopulate as any)
 @ObjectType({description: "Project type definitions"})
 export class Project {
     @Field(type => ID, {nullable: true})
     _id?: string
 
-    @prop({ref: 'User', required: true })
+    @prop({autopopulate: true,ref: 'User', required: true })
     @Field(type => User,{nullable: true})
     author?: Ref<User>;
 
-    @prop({ref: 'User' })
+    @prop({autopopulate: true,ref: 'User' })
     @Field(type => [User], {nullable: true})
     contributors?: Ref<User>[];
 

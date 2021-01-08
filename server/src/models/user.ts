@@ -1,9 +1,10 @@
 import { Field, ObjectType, ID } from "type-graphql";
-import { prop, Ref, getModelForClass } from '@typegoose/typegoose'
+import { prop, Ref, getModelForClass, plugin } from '@typegoose/typegoose'
+import autopopulate from 'mongoose-autopopulate'
 
 import {Project} from "./project";
 
-
+@plugin(autopopulate as any)
 @ObjectType({description: "User type definitions"})
 export class User {
     //TODO TRY MINIMIZING COLUMNS
@@ -38,7 +39,7 @@ export class User {
     @Field()
     photoURL?: string;
 
-    @prop({ref: 'Project'})
+    @prop({autopopulate: true, ref: 'Project'})
     @Field(type => [Project])
     projects?: Ref<Project>[]
 

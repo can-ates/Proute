@@ -17,8 +17,11 @@ import { MyContext } from "../typeDefs/MyContext";
 
 @Resolver()
 export class ProjectResolver {
+
+
+
 	//CREATE PROJECT
-	@Mutation(() => Project)
+	@Mutation(returns => Project)
 	@UseMiddleware(isAuth)
 	async createProject(
 		@Arg("projectData")
@@ -27,7 +30,7 @@ export class ProjectResolver {
 	): Promise<ProjectResponse> {
 		let project;
 
-        //TODO INTEGRATE AUTO-POPULATE PLUGIN
+        
 		try {
             //Create a new project
 			project = await ProjectModel.create({
