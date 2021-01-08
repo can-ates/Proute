@@ -39,9 +39,9 @@ export class UserResolver {
 	//REGISTER USER
 	@Mutation(returns => String)
 	async registerUser(
-		@Arg("userData") newUserData: registerUserInput
+		@Arg("userData") { name, email, password }: registerUserInput
 	): Promise<String> {
-		let { name, email, password } = newUserData;
+		
 
 		//Check if user exists
 		const user = await UserModel.findOne({ email });

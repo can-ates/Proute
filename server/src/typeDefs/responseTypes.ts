@@ -1,4 +1,5 @@
 import { ObjectType, Field } from "type-graphql";
+import { Project } from "../models/project";
 import {User} from '../models/user'
 
 @ObjectType()
@@ -9,6 +10,7 @@ class FieldError {
 	message?: string;
 }
 
+//LOGIN USER
 @ObjectType()
 export class LoginResponse {
 	@Field(() => [FieldError], { nullable: true })
@@ -19,4 +21,14 @@ export class LoginResponse {
 
 	@Field(() => User, { nullable: true })
 	user?: User;
+}
+
+//CREATE PROJECT
+@ObjectType()
+export class ProjectResponse{
+    @Field(() => [FieldError], { nullable: true })
+    errors?: FieldError[];
+    
+    @Field({nullable: true})
+    project?: Project
 }
