@@ -15,6 +15,8 @@ import {isAuthor} from '../middleware/isAuthor'
 import { createProjectInput, addTaskInput } from "../typeDefs/inputTypes";
 import { ProjectResponse } from "../typeDefs/responseTypes";
 import { MyContext } from "../typeDefs/MyContext";
+import { forEachField } from "apollo-server-express";
+import { DocumentType } from "@typegoose/typegoose";
 
 @Resolver()
 export class ProjectResolver {
@@ -58,20 +60,33 @@ export class ProjectResolver {
 	}
 
 
+
+	//DELETE PROJECT
 	@Mutation(returns => String)
 	@UseMiddleware(isAuth, isAuthor)
 	async deleteProject(
 		@Arg("projectId") projectId: string,
 		@Ctx() ctx: MyContext
-	){
+	): Promise<String>{
 
-		console.log(ctx.projectDetail)
+		let deletedProject: DocumentType<Project> | any= ctx.projectDetail
 
-		return "LOL"
+		//First off, Remove project from contributer's projects
+		deletedProject.contributors?.forEach(async (user: any) => {
+			await UserModel.findByIdAndUpdate(user!._id, {$pull: {projects: projectId}})
+		})
+
+		//Then, delete project from author's field
+		await UserModel.findByIdAndUpdate(deletedProject.author!._id, {$pull: {projects: projectId}})
+
+		//Lastly, DELETE project
+		await ProjectModel.findByIdAndDelete(deletedProject._id)
+
+		return `${deletedProject.title} successfully deleted`
 	}
 
+
 	//ADD TASK TO PROJECT
-	//TODO IMPLEMENT AUTHOR CHECKER MIDDLEWARE
 	//TODO WHO SHOULD CREATE TASK!!!!
 	@Mutation(returns => String)
 	@UseMiddleware(isAuth)

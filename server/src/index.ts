@@ -3,7 +3,7 @@ import "reflect-metadata";
 import express from "express";
 import cookieParser from "cookie-parser";
 import { verify } from "jsonwebtoken";
-import cors from 'cors'
+import cors from "cors";
 
 import mongoose from "mongoose";
 import { ApolloServer } from "apollo-server-express";
@@ -22,12 +22,12 @@ const main = async () => {
 	const app = express();
 	app.use(
 		cors({
-		  origin: "http://localhost:3000",
-		  credentials: true
+			origin: "http://localhost:3000",
+			credentials: true,
 		})
-	  );
+	);
 	app.use(cookieParser());
-	//For every graphql request, Client will 
+	//For every graphql request, Client will
 	//check if the token expired, if expired
 	//Token will be refreshed before request
 	app.post("/refresh_token", async (req, res) => {
@@ -40,7 +40,6 @@ const main = async () => {
 		try {
 			payload = verify(token, process.env.REFRESH_TOKEN_SECRET!);
 		} catch (err) {
-			
 			return res.send({ ok: false, accessToken: "" });
 		}
 
@@ -52,7 +51,6 @@ const main = async () => {
 			return res.send({ ok: false, accessToken: "" });
 		}
 
-		
 		if (user.tokenVersion !== payload.tokenVersion) {
 			return res.send({ ok: false, accessToken: "" });
 		}
@@ -65,7 +63,7 @@ const main = async () => {
 	const schema = await buildSchema({
 		resolvers: [UserResolver, ProjectResolver],
 		nullableByDefault: true,
-		dateScalarMode: 'isoDate'
+		dateScalarMode: "isoDate",
 	});
 
 	const server = new ApolloServer({
@@ -74,7 +72,6 @@ const main = async () => {
 			req,
 			res,
 		}),
-		
 	});
 
 	//Apollo offers cors but we want to implement it ourself
@@ -85,6 +82,7 @@ const main = async () => {
 			useNewUrlParser: true,
 			useUnifiedTopology: true,
 			useCreateIndex: true,
+			useFindAndModify: false,
 		})
 		.then(() => {
 			app.listen({ port: 4000 }, () =>

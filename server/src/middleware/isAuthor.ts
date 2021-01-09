@@ -8,7 +8,6 @@ export const isAuthor: MiddlewareFn<MyContext> = async (
 	{ args: { projectId }, context },
 	next
 ) => {
-	// console.log(projectId, context.payload);
 
 	let project: any
 

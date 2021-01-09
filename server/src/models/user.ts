@@ -11,7 +11,7 @@ export class User {
     @Field(type => ID)
     _id?: string;
 
-    @prop({ required: true, unique: true })
+    @prop({ required: true })
     @Field()
     name?: string;
 
