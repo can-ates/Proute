@@ -1,4 +1,4 @@
-import { Field, ObjectType, ID } from "type-graphql";
+import { Field, ObjectType, ID, Int } from "type-graphql";
 import { prop, Ref, getModelForClass, plugin } from '@typegoose/typegoose'
 import autopopulate from 'mongoose-autopopulate'
 
@@ -44,7 +44,7 @@ export class User {
     projects?: Ref<Project>[]
 
     @prop({default: 0})
-    @Field()
+    @Field(type => Int)
     tokenVersion?: number
 }
 

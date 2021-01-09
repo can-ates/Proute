@@ -10,8 +10,8 @@ class FieldError {
 	message?: string;
 }
 
-//LOGIN USER
-@ObjectType()
+//USER
+@ObjectType({description: "LOGIN USER RESPONSE"})
 export class LoginResponse {
 	@Field(() => [FieldError], { nullable: true })
 	errors?: FieldError[];
@@ -23,8 +23,8 @@ export class LoginResponse {
 	user?: User;
 }
 
-//CREATE PROJECT
-@ObjectType()
+//PROJECT
+@ObjectType({description: "GENERAL PROJECT RESPONSE"})
 export class ProjectResponse{
     @Field(() => [FieldError], { nullable: true })
     errors?: FieldError[];

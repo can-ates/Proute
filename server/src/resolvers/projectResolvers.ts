@@ -7,11 +7,11 @@ import {
 	Ctx,
 } from "type-graphql";
 import { Project, ProjectModel } from "../models/project";
-import {UserModel} from '../models/user'
+import { UserModel } from "../models/user";
 
 import { isAuth } from "../middleware/isAuth";
 
-import { createProjectInput } from "../typeDefs/inputTypes";
+import { createProjectInput, addTaskInput } from "../typeDefs/inputTypes";
 import { ProjectResponse } from "../typeDefs/responseTypes";
 import { MyContext } from "../typeDefs/MyContext";
 
@@ -19,6 +19,37 @@ import { MyContext } from "../typeDefs/MyContext";
 export class ProjectResolver {
 
 
+	//ADD TASK TO PROJECT
+	//TODO IMPLEMENT AUTHOR CHECKER MIDDLEWARE
+	//TODO WHO SHOULD CREATE TASK!!!!
+	@Mutation(returns => String)
+	@UseMiddleware(isAuth)
+	async addTask(
+		@Arg("taskData")
+		{ projectId, priority, todo, assigned, taskTags, taskStatus }: addTaskInput,
+		@Ctx() ctx: MyContext
+	): Promise<ProjectResponse | String> {
+		const newTask = { priority, todo, assigned, taskTags, taskStatus };
+
+		try {
+			await ProjectModel.updateOne(
+				{_id: projectId},
+				{$push: {tasks: newTask}}
+			)
+		} catch (err) {
+			return {
+				errors: [
+					{
+						field: "Task",
+						message: "Something went wrong",
+					},
+				],
+			};
+		}
+		
+
+		return "Task added successfully";
+	}
 
 	//CREATE PROJECT
 	@Mutation(returns => Project)
@@ -30,26 +61,25 @@ export class ProjectResolver {
 	): Promise<ProjectResponse> {
 		let project;
 
-        
 		try {
-            //Create a new project
+			//Create a new project
 			project = await ProjectModel.create({
 				author: ctx.payload?.userId,
 				title,
 				description,
 				dueDate,
 				projectTags,
-            });
-            //Save project to current user's PROJECTS
-            await UserModel.updateOne(
-                {"_id":ctx.payload?.userId},
-                {"$push": {"projects": project._id}}
-                )
+			});
+			//Save project to current user's PROJECTS
+			await UserModel.updateOne(
+				{ _id: ctx.payload?.userId },
+				{ $push: { projects: project._id } }
+			);
 		} catch (err) {
 			return {
 				errors: [
 					{
-						field: "project",
+						field: "Project",
 						message: "Something went wrong",
 					},
 				],

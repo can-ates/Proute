@@ -64,6 +64,8 @@ const main = async () => {
 
 	const schema = await buildSchema({
 		resolvers: [UserResolver, ProjectResolver],
+		nullableByDefault: true,
+		dateScalarMode: 'isoDate'
 	});
 
 	const server = new ApolloServer({
@@ -72,6 +74,7 @@ const main = async () => {
 			req,
 			res,
 		}),
+		
 	});
 
 	//Apollo offers cors but we want to implement it ourself
