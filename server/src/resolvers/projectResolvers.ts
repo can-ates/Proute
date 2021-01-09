@@ -10,6 +10,7 @@ import { Project, ProjectModel } from "../models/project";
 import { UserModel } from "../models/user";
 
 import { isAuth } from "../middleware/isAuth";
+import {isAuthor} from '../middleware/isAuthor'
 
 import { createProjectInput, addTaskInput } from "../typeDefs/inputTypes";
 import { ProjectResponse } from "../typeDefs/responseTypes";
@@ -17,39 +18,6 @@ import { MyContext } from "../typeDefs/MyContext";
 
 @Resolver()
 export class ProjectResolver {
-
-
-	//ADD TASK TO PROJECT
-	//TODO IMPLEMENT AUTHOR CHECKER MIDDLEWARE
-	//TODO WHO SHOULD CREATE TASK!!!!
-	@Mutation(returns => String)
-	@UseMiddleware(isAuth)
-	async addTask(
-		@Arg("taskData")
-		{ projectId, priority, todo, assigned, taskTags, taskStatus }: addTaskInput,
-		@Ctx() ctx: MyContext
-	): Promise<ProjectResponse | String> {
-		const newTask = { priority, todo, assigned, taskTags, taskStatus };
-
-		try {
-			await ProjectModel.updateOne(
-				{_id: projectId},
-				{$push: {tasks: newTask}}
-			)
-		} catch (err) {
-			return {
-				errors: [
-					{
-						field: "Task",
-						message: "Something went wrong",
-					},
-				],
-			};
-		}
-		
-
-		return "Task added successfully";
-	}
 
 	//CREATE PROJECT
 	@Mutation(returns => Project)
@@ -88,4 +56,51 @@ export class ProjectResolver {
 
 		return project;
 	}
+
+
+	@Mutation(returns => String)
+	@UseMiddleware(isAuth, isAuthor)
+	async deleteProject(
+		@Arg("projectId") projectId: string,
+		@Ctx() ctx: MyContext
+	){
+
+		console.log(ctx.projectDetail)
+
+		return "LOL"
+	}
+
+	//ADD TASK TO PROJECT
+	//TODO IMPLEMENT AUTHOR CHECKER MIDDLEWARE
+	//TODO WHO SHOULD CREATE TASK!!!!
+	@Mutation(returns => String)
+	@UseMiddleware(isAuth)
+	async addTask(
+		@Arg("taskData")
+		{ projectId, priority, todo, assigned, taskTags, taskStatus }: addTaskInput,
+		@Ctx() ctx: MyContext
+	): Promise<ProjectResponse | String> {
+		const newTask = { priority, todo, assigned, taskTags, taskStatus };
+
+		try {
+			await ProjectModel.updateOne(
+				{_id: projectId},
+				{$push: {tasks: newTask}}
+			)
+		} catch (err) {
+			return {
+				errors: [
+					{
+						field: "Task",
+						message: "Something went wrong",
+					},
+				],
+			};
+		}
+		
+
+		return "Task added successfully";
+	}
+
+	
 }

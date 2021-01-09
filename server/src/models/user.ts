@@ -19,7 +19,7 @@ export class User {
     @Field()
     email?: string;
 
-    @prop()
+    @prop({select: false})
     @Field()
     password?: string;
 

@@ -68,7 +68,7 @@ export class UserResolver {
 		@Arg("password") password: string,
 		@Ctx() ctx: MyContext
 	): Promise<LoginResponse> {
-		const user = await UserModel.findOne({ email });
+		const user = await UserModel.findOne({ email }).select('+password');
 
 		if (!user) {
 			return {

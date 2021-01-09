@@ -15,7 +15,7 @@ class Task {
 	@Field()
 	todo?: string;
 
-	@prop({ autopopulate: true, ref: "User", required: true })
+	@prop({ autopopulate: { maxDepth: 1 }, ref: "User", required: true })
 	@Field(type => User)
 	assigned?: Ref<User>;
 
@@ -35,7 +35,7 @@ class Task {
 @plugin(autopopulate as any)
 @ObjectType({ description: "Comment type definition" })
 class Comment {
-	@prop({ autopopulate: true, ref: "User", required: true })
+	@prop({ autopopulate: { maxDepth: 1 }, ref: "User", required: true })
 	@Field(type => User)
 	commenter?: Ref<User>;
 
@@ -54,11 +54,11 @@ export class Project {
 	@Field(type => ID)
 	_id?: string;
 
-	@prop({ autopopulate: true, ref: "User", required: true })
+	@prop({ autopopulate: { maxDepth: 2 }, ref: "User", required: true })
 	@Field(type => User)
 	author?: Ref<User>;
 
-	@prop({ autopopulate: true, ref: "User" })
+	@prop({ autopopulate: { maxDepth: 1 }, ref: "User" })
 	@Field(type => [User])
 	contributors?: Ref<User>[];
 
