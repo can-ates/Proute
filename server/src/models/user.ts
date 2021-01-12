@@ -45,10 +45,6 @@ export class User {
     @prop({autopopulate: true, ref: 'Project'})
     @Field(type => [Project])
     projects?: Ref<Project>[]
-
-    @prop({ autopopulate: { maxDepth: 1 }, ref: "User" })
-	@Field(type => [User])
-    contacts?: Ref<User>[];
     
     @prop({ type: () => [Notification] })
 	@Field(type => [Notification])
@@ -66,9 +62,13 @@ class Notification {
 	@Field(type => User)
 	sender?: Ref<User>;
 
-	@prop({ required: true })
+    @prop({ required: true })
 	@Field()
 	type?: string;
+
+	@prop({ required: true })
+	@Field()
+	objectId?: string;
 
 	@prop({required: true})
 	@Field()

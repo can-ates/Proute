@@ -25,6 +25,22 @@ import { DocumentType } from "@typegoose/typegoose";
 
 @Resolver()
 export class UserResolver {
+
+
+	//FIND USER BY EMAIL
+	@Query(returns => User)
+	@UseMiddleware(isAuth)
+	async findUserByEmail(
+		@Arg("email") email: string,
+		@Ctx() ctx: MyContext
+	): Promise<DocumentType<User> | null>  {
+		
+
+		return await UserModel.findOne({email})
+	}
+
+
+
 	//FETCH LOGGED IN USER
 	@Query(returns => User)
 	@UseMiddleware(isAuth)
