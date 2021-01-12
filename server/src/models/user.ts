@@ -4,6 +4,9 @@ import autopopulate from 'mongoose-autopopulate'
 
 import {Project} from "./project";
 
+
+
+
 @plugin(autopopulate as any)
 @ObjectType({description: "User type definitions"})
 export class User {
@@ -43,9 +46,33 @@ export class User {
     @Field(type => [Project])
     projects?: Ref<Project>[]
 
+    @prop({ autopopulate: { maxDepth: 1 }, ref: "User" })
+	@Field(type => [User])
+    contacts?: Ref<User>[];
+    
+    @prop({ type: () => [Notification] })
+	@Field(type => [Notification])
+	notifications?: Notification[];
+
     @prop({default: 0})
     @Field(type => Int)
     tokenVersion?: number
+}
+
+@plugin(autopopulate as any)
+@ObjectType({ description: "Notification type definition" })
+class Notification {
+	@prop({ autopopulate: { maxDepth: 1 }, ref: "User", required: true })
+	@Field(type => User)
+	sender?: Ref<User>;
+
+	@prop({ required: true })
+	@Field()
+	type?: string;
+
+	@prop({required: true})
+	@Field()
+	message?: string;
 }
 
 export const UserModel = getModelForClass(User)
