@@ -58,17 +58,17 @@ export class User {
 @plugin(autopopulate as any)
 @ObjectType({ description: "Notification type definition" })
 class Notification {
-	@prop({ autopopulate: { maxDepth: 1 }, ref: "User", required: true })
-	@Field(type => User)
-	sender?: Ref<User>;
-
-    @prop({ required: true })
+	@prop({required: true} )
 	@Field()
-	type?: string;
+	senderName?: string
+
+    @prop({required: true} )
+	@Field()
+	senderPhoto?: string
 
 	@prop({ required: true })
 	@Field()
-	objectId?: string;
+	projectId?: string;
 
 	@prop({required: true})
 	@Field()

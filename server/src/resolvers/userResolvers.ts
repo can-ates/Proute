@@ -8,10 +8,10 @@ import {
 } from "type-graphql";
 import { hashSync, compare } from "bcrypt";
 
-import {isAuth} from '../middleware/isAuth'
+import { isAuth } from "../middleware/isAuth";
 import { User, UserModel } from "../models/user";
-import {LoginResponse} from '../typeDefs/responseTypes'
-import {registerUserInput} from '../typeDefs/inputTypes'
+import { LoginResponse, UserResponse } from "../typeDefs/responseTypes";
+import { registerUserInput } from "../typeDefs/inputTypes";
 import { MyContext } from "../typeDefs/MyContext";
 import {
 	createAccessToken,
@@ -20,36 +20,68 @@ import {
 } from "../auth/token";
 import { DocumentType } from "@typegoose/typegoose";
 
-
-
-
 @Resolver()
 export class UserResolver {
-
-
-	//FIND USER BY EMAIL
-	@Query(returns => User)
-	@UseMiddleware(isAuth)
-	async findUserByEmail(
-		@Arg("email") email: string,
-		@Ctx() ctx: MyContext
-	): Promise<DocumentType<User> | null>  {
-		
-
-		return await UserModel.findOne({email})
-	}
-
-
-
 	//FETCH LOGGED IN USER
 	@Query(returns => User)
 	@UseMiddleware(isAuth)
-	async me(
+	async me(@Ctx() ctx: MyContext): Promise<DocumentType<User> | null> {
+		return await UserModel.findById(ctx!.payload!.userId);
+	}
+
+	//FIND USER BY EMAIL
+	@Query(returns => UserResponse)
+	@UseMiddleware(isAuth)
+	async findUserByEmail(@Arg("email") email: string): Promise<UserResponse> {
+		const user = await UserModel.findOne({ email });
+
+		if (!user) {
+			return {
+				errors: [
+					{
+						field: "user",
+						message: "The user does not exist",
+					},
+				],
+			};
+		}
+
+		return user;
+	}
+
+	//SEND INVITATION FOR PROJECT
+	@Mutation(returns => String)
+	@UseMiddleware(isAuth)
+	async sendProjectInvitation(
+		@Arg("receiverEmail") receiverEmail: string,
+		@Arg("projectName") projectName: string,
+		@Arg("projectId") projectId: string,
 		@Ctx() ctx: MyContext
-	): Promise<DocumentType<User> | null>  {
+	): Promise<String> {
+
+		try{
+			//First we fetch sender's detail
+			const sender = await UserModel.findById(ctx!.payload!.userId);
+
+			const notification = {
+				senderName: sender?.name,
+				senderPhoto: sender?.photoURL,
+				projectName,
+				projectId,
+				message: `${sender?.name} has invited you to ${projectName} project`,
+			};
+
+			//Update receiver's notifications
+			await UserModel.updateOne(
+				{ email: receiverEmail },
+				{ $push: { notifications: notification } }
+			);
+		} catch(err) {
+			throw new Error("Something went wrong");
+		}
 		
 
-		return await UserModel.findById(ctx!.payload!.userId)
+		return "Invitation Sent";
 	}
 
 	//REGISTER USER
@@ -57,8 +89,6 @@ export class UserResolver {
 	async registerUser(
 		@Arg("userData") { name, email, password }: registerUserInput
 	): Promise<String> {
-		
-
 		//Check if user exists
 		const user = await UserModel.findOne({ email });
 
@@ -84,7 +114,7 @@ export class UserResolver {
 		@Arg("password") password: string,
 		@Ctx() ctx: MyContext
 	): Promise<LoginResponse> {
-		const user = await UserModel.findOne({ email }).select('+password');
+		const user = await UserModel.findOne({ email }).select("+password");
 
 		if (!user) {
 			return {
@@ -112,7 +142,6 @@ export class UserResolver {
 
 		sendRefreshToken(ctx.res, createRefreshToken(user));
 
-		
 		return {
 			//CLIENT WILL SEND THIS TOKEN FOR AUTHORIZED ROUTES
 			accessToken: createAccessToken(user),

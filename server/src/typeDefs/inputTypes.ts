@@ -20,6 +20,7 @@ export class registerUserInput {
 	password!: string;
 }
 
+
 //PROJECT INPUT TYPES
 @InputType({description: "Create Project"})
 export class createProjectInput{
@@ -38,7 +39,7 @@ export class createProjectInput{
 	dueDate!: Date
 }
 
-@InputType({description: "Add Task"})
+@InputType({description: "Add Task for project"})
 export class addTaskInput{
 	@Field(type => ID)
 	projectId!: string
