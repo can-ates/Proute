@@ -21,6 +21,32 @@ import { DocumentType } from "@typegoose/typegoose";
 @Resolver()
 export class ProjectResolver {
 
+	//JOIN A PROJECT
+	@Mutation(returns => Boolean)
+	@UseMiddleware(isAuth)
+	async joinProject(
+		@Arg('projectId') projectId: string,
+		@Ctx() ctx: MyContext
+	): Promise<Boolean | never>{
+
+		//First, user is added to Project's contributors
+		try {
+			await ProjectModel.updateOne(
+				{_id: projectId},
+				{$push: {contributors: ctx.payload?.userId}}
+			)
+			//Then added user is updated
+			await UserModel.updateOne(
+				{ _id: ctx.payload?.userId },
+				{ $push: { projects: projectId } }
+			);
+		} catch (err){
+			throw new Error('Something went wrong')
+		}
+
+		return true
+	}
+
 	//CREATE PROJECT
 	@Mutation(returns => Project)
 	@UseMiddleware(isAuth)
