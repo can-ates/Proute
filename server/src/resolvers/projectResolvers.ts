@@ -15,9 +15,10 @@ import {isAuthor} from '../middleware/isAuthor'
 import { createProjectInput, addTaskInput } from "../typeDefs/inputTypes";
 import { ProjectResponse } from "../typeDefs/responseTypes";
 import { MyContext } from "../typeDefs/MyContext";
-import { forEachField } from "apollo-server-express";
 import { DocumentType } from "@typegoose/typegoose";
 
+
+//TODO HANDLE ERRORS AND RETURN TYPES
 @Resolver()
 export class ProjectResolver {
 
@@ -141,6 +142,39 @@ export class ProjectResolver {
 		
 
 		return "Task added successfully";
+	}
+
+	//ADD COMMENT TO PROJECT
+	@Mutation(returns => String)
+	@UseMiddleware(isAuth)
+	async addComment(
+		@Arg("projectId") projectId: string,
+		@Arg('comment') comment: string,
+		@Ctx() ctx: MyContext
+	): Promise<ProjectResponse | String> {
+
+		let newComment = {
+			commenter: ctx.payload?.userId,
+			comment,
+		}
+
+		try {
+			await ProjectModel.updateOne(
+				{_id: projectId},
+				{$push: {comments: newComment}}
+			)
+		} catch (err) {
+			return {
+				errors: [
+					{
+						field: "Comment",
+						message: "Something went wrong",
+					},
+				],
+			};
+		}
+
+		return "Comment added successfully";
 	}
 
 	

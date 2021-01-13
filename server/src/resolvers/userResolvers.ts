@@ -22,32 +22,8 @@ import { DocumentType } from "@typegoose/typegoose";
 
 @Resolver()
 export class UserResolver {
-	//FETCH LOGGED IN USER
-	@Query(returns => User)
-	@UseMiddleware(isAuth)
-	async me(@Ctx() ctx: MyContext): Promise<DocumentType<User> | null> {
-		return await UserModel.findById(ctx!.payload!.userId);
-	}
-
-	//FIND USER BY EMAIL
-	@Query(returns => UserResponse)
-	@UseMiddleware(isAuth)
-	async findUserByEmail(@Arg("email") email: string): Promise<UserResponse> {
-		const user = await UserModel.findOne({ email });
-
-		if (!user) {
-			return {
-				errors: [
-					{
-						field: "user",
-						message: "The user does not exist",
-					},
-				],
-			};
-		}
-
-		return user;
-	}
+	
+	
 
 	//SEND INVITATION FOR PROJECT
 	@Mutation(returns => String)
@@ -82,6 +58,33 @@ export class UserResolver {
 		
 
 		return "Invitation Sent";
+	}
+
+	//FETCH LOGGED IN USER
+	@Query(returns => User)
+	@UseMiddleware(isAuth)
+	async me(@Ctx() ctx: MyContext): Promise<DocumentType<User> | null> {
+		return await UserModel.findById(ctx!.payload!.userId);
+	}
+
+	//FIND USER BY EMAIL
+	@Query(returns => UserResponse)
+	@UseMiddleware(isAuth)
+	async findUserByEmail(@Arg("email") email: string): Promise<UserResponse> {
+		const user = await UserModel.findOne({ email });
+
+		if (!user) {
+			return {
+				errors: [
+					{
+						field: "user",
+						message: "The user does not exist",
+					},
+				],
+			};
+		}
+
+		return user;
 	}
 
 	//REGISTER USER
