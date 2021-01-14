@@ -1,4 +1,4 @@
-import { InputType, Field, ID } from "type-graphql";
+import { InputType, Field, ID,   } from "type-graphql";
 import {IsNotEmpty, IsEmail, Length, MinDate } from 'class-validator'
 
 
@@ -37,6 +37,18 @@ export class createProjectInput{
 	@MinDate(new Date())
 	@Field()
 	dueDate!: Date
+}
+
+@InputType({description: "Update Project"})
+export class updateProjectInput{
+	@Field(type => ID)
+	projectId!: string;
+
+	@Field()
+	fieldToUpdate!: string;
+
+	@Field(type => [String])
+	newValue!: string[];
 }
 
 @InputType({description: "Add Task for project"})

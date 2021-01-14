@@ -12,7 +12,7 @@ import { UserModel } from "../models/user";
 import { isAuth } from "../middleware/isAuth";
 import {isAuthor} from '../middleware/isAuthor'
 
-import { createProjectInput, addTaskInput } from "../typeDefs/inputTypes";
+import { createProjectInput, addTaskInput, updateProjectInput } from "../typeDefs/inputTypes";
 import { ProjectResponse } from "../typeDefs/responseTypes";
 import { MyContext } from "../typeDefs/MyContext";
 import { DocumentType } from "@typegoose/typegoose";
@@ -84,6 +84,35 @@ export class ProjectResolver {
 		}
 
 		return project;
+	}
+
+	//UPDATE PROJECT
+	//!fieldToUpdate should be consistent with the data model
+	@Mutation(returns => Boolean)
+	@UseMiddleware(isAuth)
+	async updateProject(
+		@Arg("updateData") {projectId, fieldToUpdate, newValue}: updateProjectInput
+	): Promise<Boolean | never>{
+		//Dynamically updating fields
+		let updatedField: any = {}
+		if(fieldToUpdate !== 'projectTags'){
+			updatedField[fieldToUpdate] = newValue[0]
+		} else {
+			updatedField[fieldToUpdate] = newValue
+		}
+		
+		
+
+		try {
+			await ProjectModel.updateOne(
+				{_id: projectId},
+				{$set: updatedField}
+			)
+		} catch (err) {
+			throw new Error(err)
+		}
+
+		return true
 	}
 
 
