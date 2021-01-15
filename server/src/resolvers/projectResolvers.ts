@@ -12,7 +12,7 @@ import { UserModel } from "../models/user";
 import { isAuth } from "../middleware/isAuth";
 import {isAuthor} from '../middleware/isAuthor'
 
-import { createProjectInput, addTaskInput, updateProjectInput } from "../typeDefs/inputTypes";
+import { createProjectInput, addTaskInput, updateProjectInput, updateTaskInput } from "../typeDefs/inputTypes";
 import { ProjectResponse } from "../typeDefs/responseTypes";
 import { MyContext } from "../typeDefs/MyContext";
 import { DocumentType } from "@typegoose/typegoose";
@@ -171,6 +171,39 @@ export class ProjectResolver {
 		
 
 		return "Task added successfully";
+	}
+
+	//UPDATE TASK FOR A PROECT
+	@Mutation(returns => Boolean)
+	@UseMiddleware(isAuth)
+	async updateTask(
+		@Arg("updateData") {projectId,taskId, fieldToUpdate, newValue}: updateTaskInput,
+		@Ctx() ctx: MyContext
+	): Promise<Boolean | never> {
+		//Dynamically updating fields
+		let updatedField: any = {}
+		if(fieldToUpdate !== 'taskTags'){
+			updatedField[fieldToUpdate] = newValue[0]
+		} else {
+			updatedField[fieldToUpdate] = newValue
+		}
+		
+		try {
+			await ProjectModel.updateOne(
+				{_id: projectId },
+				{$set: {
+					"tasks.$[taskId]": updatedField
+				}},
+				{
+					"arrayFilters": [{'taskId._id': taskId}]
+				}
+			)
+		} catch (err) {
+			throw new Error('Something went wrong')
+		}
+		
+
+		return true;
 	}
 
 	//ADD COMMENT TO PROJECT

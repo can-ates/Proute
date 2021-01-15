@@ -71,3 +71,18 @@ export class addTaskInput{
 	@Field()
 	taskStatus?: string
 }
+
+@InputType({description: "Update Task"})
+export class updateTaskInput{
+	@Field(type => ID)
+	projectId!: string;
+
+	@Field(type => ID)
+	taskId!: string
+
+	@Field()
+	fieldToUpdate!: string;
+
+	@Field(type => [String])
+	newValue!: string[];
+}

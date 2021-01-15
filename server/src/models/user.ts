@@ -68,9 +68,13 @@ class Notification {
 
 	@prop({ required: true })
 	@Field()
-	projectId?: string;
+    projectId?: string;
+    
+    @prop({ required: true })
+	@Field()
+	projectName?: string;
 
-	@prop({required: true})
+	@prop()
 	@Field()
 	message?: string;
 }
